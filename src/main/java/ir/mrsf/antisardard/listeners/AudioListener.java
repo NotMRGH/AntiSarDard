@@ -9,18 +9,20 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class AudioListener implements AudioReceiveHandler {
     private final Guild guild;
     private final TimedHashSet<Long> inPunishments;
+    private final HashMap<Long, Integer> average;
 
     public AudioListener(Guild guild) {
         this.guild = guild;
         this.inPunishments = new TimedHashSet<>();
+        this.average = new HashMap<>();
     }
 
     @Override
@@ -34,8 +36,16 @@ public class AudioListener implements AudioReceiveHandler {
         final long id = userAudio.getUser().getIdLong();
         if (!Settings.TARGETS.getAs(List.class).contains(id)) return;
         final double volume = calculateVolume(userAudio.getAudioData(1.0));
-        if (!(volume > Settings.VOLUME_THRESHOLD.getAs(Double.class)))
+        if (!(volume > Settings.VOLUME_THRESHOLD.getAs(Double.class))) {
+            if (Settings.MODE.getAs(String.class).equalsIgnoreCase("average")) {
+                this.average.remove(id);
+            }
             return;
+        }
+        if (Settings.MODE.getAs(String.class).equalsIgnoreCase("average")) {
+            this.average.put(id, this.average.getOrDefault(id, 0) + 1);
+            if (this.average.get(id) < 3) return;
+        }
         final Member targetMember = guild.getMemberById(id);
         if (targetMember == null) return;
         final GuildVoiceState voiceState = targetMember.getVoiceState();
@@ -44,8 +54,6 @@ public class AudioListener implements AudioReceiveHandler {
         if (this.inPunishments.contains(id)) return;
         guild.kickVoiceMember(targetMember).queue();
         this.inPunishments.add(id, 5, TimeUnit.SECONDS);
-        LoggerFactory.getLogger(this.getClass()).info("User {} Ba Hajm Sedaie {} Madaresh Gayyde Shod",
-                targetMember.getNickname(), volume);
     }
 
 

@@ -87,6 +87,7 @@ public class Main {
         final FileWriter fileWriter = new FileWriter(configFile);
         fileWriter.write("""
                 Settings:
+                  mode: default #Modes: default , average
                   ignore-muted: true
                   admin-id: 78901243644335
                   token: "Mfesef2Nfstyfhfhffsfs6fsefsnd-Ti01KsfsfsgevmpivY_sXKsffesfVFCvfsef"

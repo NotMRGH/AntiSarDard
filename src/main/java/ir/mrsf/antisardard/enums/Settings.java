@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 public enum Settings {
 
+    MODE("mode"),
     IGNORE_MUTED("ignore-muted"),
     ADMIN_ID("admin-id"),
     TOKEN("token"),
