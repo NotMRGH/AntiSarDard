@@ -66,6 +66,9 @@ public class Main {
                     final GuildVoiceState voiceState = targetMember.getVoiceState();
                     if (voiceState == null) continue;
                     if (!voiceState.inAudioChannel()) continue;
+                    if (Settings.IGNORE_MUTED.getAs(Boolean.class)) {
+                        if (voiceState.isMuted()) continue;
+                    }
                     final AudioChannelUnion channel = voiceState.getChannel();
                     if (channel == null) continue;
                     BotUtil.joinVoiceChannel(channel);
@@ -84,6 +87,7 @@ public class Main {
         final FileWriter fileWriter = new FileWriter(configFile);
         fileWriter.write("""
                 Settings:
+                  ignore-muted: true
                   admin-id: 78901243644335
                   token: "Mfesef2Nfstyfhfhffsfs6fsefsnd-Ti01KsfsfsgevmpivY_sXKsffesfVFCvfsef"
                   targets: #Target IDS

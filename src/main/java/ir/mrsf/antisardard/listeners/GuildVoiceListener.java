@@ -24,6 +24,12 @@ public class GuildVoiceListener extends ListenerAdapter {
 
         if (Settings.TARGETS.getAs(List.class).contains(member.getIdLong())) {
             if (joinedChannel != null) {
+                final GuildVoiceState voiceState = member.getVoiceState();
+                if (voiceState != null) {
+                    if (Settings.IGNORE_MUTED.getAs(Boolean.class)) {
+                        if (voiceState.isMuted()) return;
+                    }
+                }
                 BotUtil.joinVoiceChannel(joinedChannel);
                 return;
             }
@@ -37,6 +43,9 @@ public class GuildVoiceListener extends ListenerAdapter {
             final GuildVoiceState voiceState = targetMember.getVoiceState();
             if (voiceState == null) return;
             if (!voiceState.inAudioChannel()) return;
+            if (Settings.IGNORE_MUTED.getAs(Boolean.class)) {
+                if (voiceState.isMuted()) return;
+            }
             final AudioChannelUnion channel = voiceState.getChannel();
             if (channel == null) return;
             BotUtil.joinVoiceChannel(channel);
