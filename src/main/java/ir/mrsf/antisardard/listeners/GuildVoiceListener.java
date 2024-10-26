@@ -39,15 +39,15 @@ public class GuildVoiceListener extends ListenerAdapter {
         if (!member.getUser().isBot() || member.getIdLong() != event.getJDA().getSelfUser().getIdLong()) return;
         for (Object targetId : Settings.TARGETS.getAs(List.class)) {
             final Member targetMember = event.getGuild().getMemberById(Long.parseLong(targetId.toString()));
-            if (targetMember == null) return;
+            if (targetMember == null) continue;
             final GuildVoiceState voiceState = targetMember.getVoiceState();
-            if (voiceState == null) return;
-            if (!voiceState.inAudioChannel()) return;
+            if (voiceState == null) continue;
+            if (!voiceState.inAudioChannel()) continue;
             if (Settings.IGNORE_MUTED.getAs(Boolean.class)) {
-                if (voiceState.isMuted()) return;
+                if (voiceState.isMuted()) continue;
             }
             final AudioChannelUnion channel = voiceState.getChannel();
-            if (channel == null) return;
+            if (channel == null) continue;
             BotUtil.joinVoiceChannel(channel);
             break;
         }
