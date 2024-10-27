@@ -59,7 +59,6 @@ public class Main {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             if (!DataUtil.toggle) return;
             for (Guild guild : jda.getGuilds()) {
-                boolean done = false;
                 for (Object targetId : Settings.TARGETS.getAs(List.class)) {
                     final Member targetMember = guild.getMemberById(Long.parseLong(targetId.toString()));
                     if (targetMember == null) continue;
@@ -72,14 +71,10 @@ public class Main {
                     final AudioChannelUnion channel = voiceState.getChannel();
                     if (channel == null) continue;
                     BotUtil.joinVoiceChannel(channel);
-                    done = true;
                     break;
                 }
-                if (!done) {
-                    BotUtil.disconnectFromVoiceChannel(guild);
-                }
             }
-        }, 10, 30, TimeUnit.SECONDS);
+        }, 10, 10, TimeUnit.SECONDS);
     }
 
     @NotNull
